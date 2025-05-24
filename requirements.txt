@@ -14,3 +14,4 @@ fuzzywuzzy
 python-Levenshtein
 dnspython
 uvloop
+requests
