@@ -880,16 +880,18 @@ async def auto_filter(client, msg, spoll=False):
         search = message.text
         files, offset, total_results = await get_search_results(search)
         if not files:
-            if settings["spell_check"]:ai_sts = await msg.reply_text('<b>Ai is Cheking For Your Spelling. Please Wait.</b>')
-                is_misspelled = await ai_spell_check(search)
-                if is_misspelled:
-                    await ai_sts.edit(f'<b>Ai Suggested <code>{is_misspelled}</code>\nSo Im Searching for <code>{is_misspelled}</code></b>')
-                    await asyncio.sleep(2)
-                    msg.text = is_misspelled
-                    await ai_sts.delete()
-                    return await auto_filter(client, msg)await ai_sts.delete()
-                await advantage_spell_chok(msg)
-            return
+    if settings["spell_check"]:
+        ai_sts = await msg.reply_text('<b>Ai is Checking For Your Spelling. Please Wait.</b>')
+        is_misspelled = await ai_spell_check(search)
+        if is_misspelled:
+            await ai_sts.edit(f'<b>Ai Suggested <code>{is_misspelled}</code>\nSo I\'m Searching for <code>{is_misspelled}</code></b>')
+            await asyncio.sleep(2)
+            msg.text = is_misspelled
+            await ai_sts.delete()
+            return await auto_filter(client, msg)
+        await ai_sts.delete()
+        await advantage_spell_chok(msg)
+    return
     else:
         settings = await get_settings(msg.message.chat.id)
         message = msg.message.reply_to_message  # msg will be callback query
