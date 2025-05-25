@@ -497,7 +497,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(btn)
         await query.message.reply_photo(
             photo="https://graph.org/file/ea8423d123dd90e34e10c.jpg",
-            caption="**⚡️Buy Premium Now\n\n ╭━━━━━━━━╮\n    Premium Plans\n  • ₹10 - 1 day (Trial)\n  • ₹25 - 1 Week (Trial)\n  • ₹50 - 1 Month\n  • ₹120 - 3 Months\n  • ₹220 - 6 Months\n  • ₹400 - 1 Year\n╰━━━━━━━━╯\n\nPremium Features ♤ᵀ&ᶜ\n\n☆ New/Old Movies and Series\n☆ High Quality available\n☆ Get Files Directly \n☆ High speed Download links\n☆ Full Admin support \n☆ Request will be completed in 1 hour if available.\n\n**",
+            caption="**⎙ ᴅɪꜱᴄʟᴀɪᴍᴇʀ ⎙\n\nᴍᴇᴅɪᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴏɴ ᴏᴜʀ ʙᴏᴛ/ᴄʜᴀɴɴᴇʟ ɪꜱ ɴᴏᴛ ᴏᴡɴᴇᴅ ʙʏ ᴜꜱ.\nɪᴛ ɪꜱ ᴜᴘʟᴏᴀᴅᴇᴅ ʙʏ ɪɴᴅᴇᴘᴇɴᴅᴇɴᴛ ᴛʜɪʀᴅ ᴘᴀʀᴛɪᴇꜱ ᴏɴ ᴛʜᴇ ɪɴᴛᴇʀɴᴇᴛ.\nᴡᴇ ᴏɴʟʏ ɪɴᴅᴇx ꜰɪʟᴇꜱ ꜰᴏʀ ᴇᴀꜱʏ ꜱᴇᴀʀᴄʜ ᴀɴᴅ ᴀᴄᴄᴇꜱꜱ.\nᴡᴇ ʀᴇꜱᴘᴇᴄᴛ ᴀʟʟ ᴄᴏᴘʏʀɪɢʜᴛ ʟᴀᴡꜱ. \nɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ᴄᴏᴍᴘʟᴀɪɴᴛꜱ ᴏʀ ᴄᴏɴᴄᴇʀɴꜱ, ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ᴄʀᴇᴀᴛᴏʀ. \nᴡᴇ ᴡɪʟʟ ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ᴄᴏɴᴛᴇɴᴛ ᴀꜱᴀᴘ.  \n\nʙʏ:** [**@ᴀᴍ_ꜰɪʟᴍꜱ**](https://t.me/am_films)"",
             reply_markup=reply_markup
         )
         return 
