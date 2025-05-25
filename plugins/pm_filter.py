@@ -874,7 +874,7 @@ async def delSticker(st):
     except:
         pass
 async def auto_filter(client, msg, spoll=False):
-    thinkStc = ''if not spoll:
+    if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
         search = message.text
