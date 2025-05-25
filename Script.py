@@ -100,7 +100,7 @@ I can't find the <b>{}</b> in my database! 🥲
 <b>Have A Nice Day🥰</b>
 
 
-<blockquote>🚫ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ᴍᴇꜱꜱᴀɢᴇ ᴛᴏ ꜱᴀᴠᴇᴅ ᴍᴇꜱꜱᴀɢᴇ ᴛʜɪꜱ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ꜰᴏʀᴍ ʜᴇʀᴇ ɪɴ 10 ᴍɪɴᴜᴛᴇꜱ🚫</blockquote>"""
+<blockquote><b>🚫ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ᴍᴇꜱꜱᴀɢᴇ ᴛᴏ ꜱᴀᴠᴇᴅ ᴍᴇꜱꜱᴀɢᴇ ᴛʜɪꜱ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ꜰᴏʀᴍ ʜᴇʀᴇ ɪɴ 10 ᴍɪɴᴜᴛᴇꜱ🚫</b></blockquote>"""
 
     WELCOME_TEXT = """👋 Hello {mention}, Welcome to {title} group! 💞"""
 
