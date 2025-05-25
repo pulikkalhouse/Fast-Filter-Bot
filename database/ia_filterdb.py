@@ -26,7 +26,11 @@ class Media(Document):
 
 # Clean strings from unwanted characters
 def clean_string(s):
-    return re.sub(r"@\w+|[_\-.+]", " ", str(s or "")).strip()
+    s = str(s or "")
+    s = re.sub(r"@\w+", "", s)             # Remove @usernames
+    s = re.sub(r"[_\-.+]", " ", s)         # Replace _, -, ., + with spaces
+    s = re.sub(r"\s+", " ", s)             # Collapse multiple spaces
+    return s.strip()
 
 # Decode new-style Pyrogram File ID
 def unpack_new_file_id(new_file_id):
