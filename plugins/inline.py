@@ -16,20 +16,20 @@ def is_banned(query: InlineQuery):
 async def inline_search(bot, query):
     """Show search results for given inline query"""
 
-    is_fsub = await is_subscribed(bot, query)
+    is_fsub = await is_subscribed(bot, query, [AUTH_CHANNEL])
     if is_fsub:
         await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text="Join my Updates Channel :(",
-                           switch_pm_parameter="inline_fsub")
+                          cache_time=0,
+                          switch_pm_text="Join my Updates Channel :(",
+                          switch_pm_parameter="inline_fsub",
+                          reply_markup=InlineKeyboardMarkup(is_fsub))
         return
-
 
     if is_banned(query):
         await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text="You're banned user :(",
-                           switch_pm_parameter="start")
+                          cache_time=0,
+                          switch_pm_text="You're banned user :(",
+                          switch_pm_parameter="start")
         return
 
 
