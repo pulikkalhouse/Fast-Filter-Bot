@@ -23,17 +23,41 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
-    # Check for force subscription
-    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
-        await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text='ʏᴏᴜ ʜᴀᴠᴇ ᴛᴏ ꜱᴜʙꜱᴄʀɪʙᴇ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ᴍᴇ !!',
-                           switch_pm_parameter="subscribe")
-        return
+    # Check for force subscription (AUTH_CHANNEL)
+    if AUTH_CHANNEL:
+        try:
+            # Handle both single channel and multiple channels for AUTH_CHANNEL
+            auth_channels = AUTH_CHANNEL if isinstance(AUTH_CHANNEL, list) else [AUTH_CHANNEL]
+            
+            for channel in auth_channels:
+                # Create a mock message object for is_subscribed function
+                from types import SimpleNamespace
+                mock_user = SimpleNamespace()
+                mock_user.id = query.from_user.id
+                mock_user.mention = query.from_user.first_name
+                
+                # Check if user is subscribed
+                try:
+                    member = await bot.get_chat_member(channel, query.from_user.id)
+                    if member.status not in ["member", "administrator", "creator"]:
+                        await query.answer(results=[],
+                                         cache_time=0,
+                                         switch_pm_text='ʏᴏᴜ ʜᴀᴠᴇ ᴛᴏ ꜱᴜʙꜱᴄʀɪʙᴇ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ᴍᴇ !!',
+                                         switch_pm_parameter="subscribe")
+                        return
+                except Exception as e:
+                    logging.error(f"Error checking AUTH_CHANNEL subscription for {channel}: {e}")
+                    await query.answer(results=[],
+                                     cache_time=0,
+                                     switch_pm_text='ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ɪɴʟɪɴᴇ ꜱᴇᴀʀᴄʜ',
+                                     switch_pm_parameter="subscribe")
+                    return
+        except Exception as e:
+            logging.error(f"Error in AUTH_CHANNEL check: {e}")
 
     # Additional check for dynamic force subscription settings
     try:
-        # Get user settings if you have per-user force subscription
+        # Get user settings if you have per-user force subscription  
         user_id = query.from_user.id
         settings = await get_settings(user_id)
         
@@ -57,7 +81,7 @@ async def inline_search(bot, query):
                 for channel in fsub_channels:
                     if isinstance(channel, list):
                         flattened.extend(channel)
-                    elif channel is not None:  # Skip None values
+                    elif channel is not None and channel != '':  # Skip None/empty values
                         flattened.append(channel)
                 fsub_channels = flattened
             
@@ -69,9 +93,12 @@ async def inline_search(bot, query):
                         # Skip invalid channel values
                         if channel is None or channel == '':
                             continue
-                            
-                        if not await is_subscribed(bot, query, channel):
+                        
+                        # Direct subscription check instead of using is_subscribed function
+                        member = await bot.get_chat_member(channel, query.from_user.id)
+                        if member.status not in ["member", "administrator", "creator"]:
                             unsubscribed_channels.append(channel)
+                            
                     except Exception as channel_error:
                         logging.error(f"Error checking subscription for channel {channel}: {channel_error}")
                         unsubscribed_channels.append(channel)
@@ -151,15 +178,33 @@ async def start_handler(bot, message):
         if parameter == "subscribe":
             # Handle AUTH_CHANNEL subscription
             if AUTH_CHANNEL:
-                btn = await is_subscribed(bot, message, AUTH_CHANNEL)
-                if btn:
-                    btn.append(
-                        [InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#start")]
-                    )
-                    reply_markup = InlineKeyboardMarkup(btn)
-                    await message.reply_photo(
-                        photo=random.choice(PICS) if 'PICS' in globals() else None,
-                        caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' to use inline search. 😇",
+                auth_channels = AUTH_CHANNEL if isinstance(AUTH_CHANNEL, list) else [AUTH_CHANNEL]
+                unsubscribed_channels = []
+                buttons = []
+                
+                for channel in auth_channels:
+                    try:
+                        member = await bot.get_chat_member(channel, message.from_user.id)
+                        if member.status not in ["member", "administrator", "creator"]:
+                            unsubscribed_channels.append(channel)
+                            # Get channel info to create join button
+                            try:
+                                chat_info = await bot.get_chat(channel)
+                                if chat_info.invite_link:
+                                    buttons.append([InlineKeyboardButton(f"Join {chat_info.title}", url=chat_info.invite_link)])
+                                elif chat_info.username:
+                                    buttons.append([InlineKeyboardButton(f"Join {chat_info.title}", url=f"https://t.me/{chat_info.username}")])
+                            except:
+                                buttons.append([InlineKeyboardButton(f"Join Channel", url=f"https://t.me/{channel.replace('@', '')}")])
+                    except Exception as e:
+                        logging.error(f"Error checking AUTH_CHANNEL subscription: {e}")
+                        unsubscribed_channels.append(channel)
+                
+                if unsubscribed_channels:
+                    buttons.append([InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#subscribe")])
+                    reply_markup = InlineKeyboardMarkup(buttons)
+                    await message.reply_text(
+                        f"👋 Hello {message.from_user.mention},\n\nPlease join my channel to use inline search. 😇",
                         reply_markup=reply_markup,
                         parse_mode=enums.ParseMode.HTML
                     )
@@ -181,7 +226,6 @@ async def start_handler(bot, message):
                 if isinstance(fsub_channels, (int, str)):
                     fsub_channels = [fsub_channels]
                 elif not isinstance(fsub_channels, list):
-                    # Handle any other type by converting to list
                     fsub_channels = [fsub_channels] if fsub_channels else []
                 
                 # Flatten nested lists if they exist
@@ -190,39 +234,44 @@ async def start_handler(bot, message):
                     for channel in fsub_channels:
                         if isinstance(channel, list):
                             flattened.extend(channel)
-                        elif channel is not None and channel != '':  # Skip None/empty values
+                        elif channel is not None and channel != '':
                             flattened.append(channel)
                     fsub_channels = flattened
                 
                 if fsub_channels:
                     # Check all channels and collect subscription buttons
-                    all_buttons = []
+                    buttons = []
                     unsubscribed_count = 0
                     
                     for channel in fsub_channels:
                         try:
-                            # Skip invalid channel values
                             if channel is None or channel == '':
                                 continue
                                 
-                            btn = await is_subscribed(bot, message, channel)
-                            if btn:
-                                all_buttons.extend(btn)
+                            member = await bot.get_chat_member(channel, message.from_user.id)
+                            if member.status not in ["member", "administrator", "creator"]:
                                 unsubscribed_count += 1
+                                # Get channel info to create join button
+                                try:
+                                    chat_info = await bot.get_chat(channel)
+                                    if chat_info.invite_link:
+                                        buttons.append([InlineKeyboardButton(f"Join {chat_info.title}", url=chat_info.invite_link)])
+                                    elif chat_info.username:
+                                        buttons.append([InlineKeyboardButton(f"Join {chat_info.title}", url=f"https://t.me/{chat_info.username}")])
+                                except:
+                                    buttons.append([InlineKeyboardButton(f"Join Channel", url=f"https://t.me/{str(channel).replace('@', '')}")])
                         except Exception as e:
                             logging.error(f"Error checking subscription for channel {channel}: {e}")
+                            unsubscribed_count += 1
                     
-                    if all_buttons:
+                    if buttons:
                         # Add try again button
-                        all_buttons.append(
-                            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{parameter}")]
-                        )
-                        reply_markup = InlineKeyboardMarkup(all_buttons)
+                        buttons.append([InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{parameter}")])
+                        reply_markup = InlineKeyboardMarkup(buttons)
                         
                         channel_text = f"{unsubscribed_count} channel{'s' if unsubscribed_count > 1 else ''}"
-                        await message.reply_photo(
-                            photo=random.choice(PICS) if 'PICS' in globals() else None,
-                            caption=f"👋 Hello {message.from_user.mention},\n\nPlease join {channel_text} to use inline search. 😇",
+                        await message.reply_text(
+                            f"👋 Hello {message.from_user.mention},\n\nPlease join {channel_text} to use inline search. 😇",
                             reply_markup=reply_markup,
                             parse_mode=enums.ParseMode.HTML
                         )
