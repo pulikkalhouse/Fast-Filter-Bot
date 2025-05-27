@@ -16,7 +16,7 @@ def is_banned(query: InlineQuery):
 async def inline_search(bot, query):
     """Show search results for given inline query"""
 
-    is_fsub = await is_subscribed(bot, query)
+    is_fsub = await is_subscribed(bot, query, [AUTH_CHANNEL])
     if is_fsub:
         await query.answer(results=[],
                            cache_time=0,
