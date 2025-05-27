@@ -81,9 +81,19 @@ async def start(client, message):
             parse_mode=enums.ParseMode.HTML
         )
         return
-
+        
 
     mc = message.command[1]
+
+    if mc.startswith('inline_fsub'):
+        btn = await is_subscribed(client, message)
+        if btn:
+            reply_markup = InlineKeyboardMarkup(btn)
+            await message.reply(f"Please join my 'Updates Channel' and use inline search. 👍",
+                reply_markup=reply_markup,
+                parse_mode=enums.ParseMode.HTML
+            )
+            return 
 
     if mc.startswith('verify'):
         _, token = mc.split("_", 1)
