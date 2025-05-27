@@ -27,7 +27,7 @@ async def inline_search(bot, query):
         await query.answer(results=[],
                            cache_time=0,
                            switch_pm_text='ʏᴏᴜ ʜᴀᴠᴇ ᴛᴏ ꜱᴜʙꜱᴄʀɪʙᴇ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ᴍᴇ !!',
-                           switch_pm_parameter="subscribe")
+                           switch_pm_parameter="inline_fsub")
         return
 
 
