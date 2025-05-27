@@ -115,11 +115,10 @@ async def start(client, message):
             await message.reply("You not verified today! Kindly verify now. 🔐", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
             return
     else:
-        pass
+        pass  # Optional if this is inside an empty block
 
-    settings = await get_settings(int(mc.split("_", 2)[1]))
-    if settings.get('is_fsub', IS_FSUB):
-    settings = await get_settings(int(mc.split("_", 2)[1]))
+settings = await get_settings(int(mc.split("_", 2)[1]))
+
 if settings.get('is_fsub', IS_FSUB):
     btn = await is_subscribed(client, message, settings['fsub'])
     if btn:
