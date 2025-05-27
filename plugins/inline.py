@@ -16,6 +16,15 @@ def is_banned(query: InlineQuery):
 async def inline_search(bot, query):
     """Show search results for given inline query"""
 
+    is_fsub = await is_subscribed(bot, query)
+    if is_fsub:
+        await query.answer(results=[],
+                           cache_time=0,
+                           switch_pm_text="Join my Updates Channel :(",
+                           switch_pm_parameter="inline_fsub")
+        return
+
+
     if is_banned(query):
         await query.answer(results=[],
                            cache_time=0,
@@ -23,14 +32,6 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
-if AUTH_CHANNEL and not await is_subscribed(bot, query, [AUTH_CHANNEL]):
-    await query.answer(
-        results=[],
-        cache_time=0,
-        switch_pm_text='ʏᴏᴜ ʜᴀᴠᴇ ᴛᴏ ꜱᴜʙꜱᴄʀɪʙᴇ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ᴍᴇ !!',
-        switch_pm_parameter="inline_fsub"
-    )
-    return
 
 
     results = []
