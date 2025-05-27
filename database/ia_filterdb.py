@@ -27,10 +27,33 @@ class Media(Document):
 # Clean strings from unwanted characters
 def clean_string(s):
     s = str(s or "")
-    s = re.sub(r"@\w+", "", s)             # Remove @usernames
-    s = re.sub(r"[_\-.+]", " ", s)         # Replace _, -, ., + with spaces
-    s = re.sub(r"\s+", " ", s)             # Collapse multiple spaces
-    return s.strip()
+
+    # Define keywords to preserve
+    protected_keywords = [
+        r"\d{3,4}p", r"x264", r"x265", r"HEVC", r"HDR",
+        r"WEBRip", r"BluRay", r"DVDRip", r"HDTV", r"WEB", r"CAM"
+    ]
+
+    # Protect keywords
+    for keyword in protected_keywords:
+        s = re.sub(f"(?i)({keyword})", r"__\1__", s)
+
+    # Remove @ symbol but keep the word (Uploader -> Uploader)
+    s = re.sub(r"@(?=\w+)", "", s)
+
+    # Replace specific symbols with space
+    s = re.sub(r"[-:\"';!]", " ", s)
+
+    # Replace _ and + with space
+    s = re.sub(r"[_.+]", " ", s)
+
+    # Collapse multiple spaces and strip
+    s = re.sub(r"\s+", " ", s).strip()
+
+    # Restore protected keywords
+    s = re.sub(r"__(\w{2,20})__", r"\1", s)
+
+    return s
 
 # Decode new-style Pyrogram File ID
 def unpack_new_file_id(new_file_id):
