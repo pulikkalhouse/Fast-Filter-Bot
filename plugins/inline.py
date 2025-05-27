@@ -23,6 +23,13 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
+    if AUTH_CHANNEL and not await is_subscribed(bot, query):
+        await query.answer(results=[],
+                           cache_time=0,
+                           switch_pm_text='ʏᴏᴜ ʜᴀᴠᴇ ᴛᴏ ꜱᴜʙꜱᴄʀɪʙᴇ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜꜱᴇ ᴍᴇ !!',
+                           switch_pm_parameter="subscribe")
+        return
+
 
     results = []
     string = query.query
