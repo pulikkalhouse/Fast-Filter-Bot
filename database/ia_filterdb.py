@@ -34,11 +34,21 @@ def clean_string(s):
         r"WEBRip", r"BluRay", r"DVDRip", r"HDTV", r"WEB", r"CAM"
     ]
 
+    # Define custom usernames/words to remove (without @)
+    custom_words_to_remove = [
+        "Adrama_lovers", "DA_Rips", "SomeUploader"
+    ]
+
+    # Remove entire patterns before cleanup
+    for word in custom_words_to_remove:
+        pattern = re.compile(rf"@?{re.escape(word)}", re.IGNORECASE)
+        s = pattern.sub("", s)
+
     # Protect keywords
     for keyword in protected_keywords:
         s = re.sub(f"(?i)({keyword})", r"__\1__", s)
 
-    # Remove @ symbol but keep the word (Uploader -> Uploader)
+    # Remove any remaining "@" symbols
     s = re.sub(r"@(?=\w+)", "", s)
 
     # Replace specific symbols with space
