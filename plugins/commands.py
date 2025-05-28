@@ -85,53 +85,87 @@ async def start(client, message):
 
     mc = message.command[1]
 
-    if mc.startswith('verify'):
+# Handle "verify_*" command
+if mc.startswith('verify'):
+    try:
         _, token = mc.split("_", 1)
-        verify_status = await get_verify_status(message.from_user.id)
-        if verify_status['verify_token'] != token:
-            return await message.reply("Your verify token is invalid.")
-        await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
-        if verify_status["link"] == "":
-            reply_markup = None
-        else:
-            btn = [[
-                InlineKeyboardButton("📌 Get File 📌", url=f'https://t.me/{temp.U_NAME}?start={verify_status["link"]}')
-            ]]
-            reply_markup = InlineKeyboardMarkup(btn)
-        await message.reply(f"✅ You successfully verified until: {get_readable_time(VERIFY_EXPIRE)}", reply_markup=reply_markup, protect_content=True)
-        return
-    
-    verify_status = await get_verify_status(message.from_user.id)
-    if not await db.has_premium_access(message.from_user.id):
-        if IS_VERIFY and not verify_status['is_verified']:
-            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-            await update_verify_status(message.from_user.id, verify_token=token, link="" if mc == 'inline_verify' else mc)
-            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://t.me/{temp.U_NAME}?start=verify_{token}')
-            btn = [[
-                InlineKeyboardButton("🧿 Verify 🧿", url=link)
-            ],[
-                InlineKeyboardButton('🗳 Tutorial 🗳', url=VERIFY_TUTORIAL)
-            ]]
-            await message.reply("You not verified today! Kindly verify now. 🔐", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
-            return
-    else:
-        pass
+    except ValueError:
+        return await message.reply("Invalid verify token format.")
 
-    settings = await get_settings(int(mc.split("_", 2)[1]))
-    if settings.get('is_fsub', IS_FSUB):
-        btn = await is_subscribed(client, message, settings['fsub'])
-        if btn:
-            btn.append(
-                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
-            )
-            reply_markup = InlineKeyboardMarkup(btn)
-            await message.reply_photo(
-                photo=random.choice(PICS),
-                caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
-                reply_markup=reply_markup,
-                parse_mode=enums.ParseMode.HTML
-            )
-            return 
+    verify_status = await get_verify_status(message.from_user.id)
+    if verify_status['verify_token'] != token:
+        return await message.reply("Your verify token is invalid.")
+
+    await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
+
+    if verify_status["link"] == "":
+        reply_markup = None
+    else:
+        btn = [[
+            InlineKeyboardButton("📌 Get File 📌", url=f'https://t.me/{temp.U_NAME}?start={verify_status["link"]}')
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+    await message.reply(
+        f"✅ You successfully verified until: {get_readable_time(VERIFY_EXPIRE)}",
+        reply_markup=reply_markup,
+        protect_content=True
+    )
+    return
+
+# Check premium/verify status
+verify_status = await get_verify_status(message.from_user.id)
+if not await db.has_premium_access(message.from_user.id):
+    if IS_VERIFY and not verify_status['is_verified']:
+        token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        await update_verify_status(
+            message.from_user.id,
+            verify_token=token,
+            link="" if mc == 'inline_verify' else mc
+        )
+        link = await get_shortlink(
+            SHORTLINK_URL, SHORTLINK_API,
+            f'https://t.me/{temp.U_NAME}?start=verify_{token}'
+        )
+        btn = [[
+            InlineKeyboardButton("🧿 Verify 🧿", url=link)
+        ], [
+            InlineKeyboardButton("🗳 Tutorial 🗳", url=VERIFY_TUTORIAL)
+        ]]
+        await message.reply(
+            "You are not verified today! Kindly verify now. 🔐",
+            reply_markup=InlineKeyboardMarkup(btn),
+            protect_content=True
+        )
+        return
+
+# Safe parsing of mc for settings fetch
+try:
+    parts = mc.split("_", 2)
+    if len(parts) < 2 or not parts[1].isdigit():
+        raise ValueError("Invalid command format for settings.")
+    settings = await get_settings(int(parts[1]))
+except Exception as e:
+    return await message.reply(
+        "⚠️ Invalid command or internal error. Please try again.",
+        parse_mode=enums.ParseMode.MARKDOWN
+    )
+
+# FSub check
+if settings.get('is_fsub', IS_FSUB):
+    btn = await is_subscribed(client, message, settings['fsub'])
+    if btn:
+        btn.append(
+            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+        )
+        reply_markup = InlineKeyboardMarkup(btn)
+        await message.reply_photo(
+            photo=random.choice(PICS),
+            caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+        return 
         
     if mc.startswith('all'):
         _, grp_id, key = mc.split("_", 2)
