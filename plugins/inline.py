@@ -24,11 +24,8 @@ async def inline_search(bot, query):
         return
 
     # Force subscription check for inline queries
-        if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
-
-        # Instead of just switch_pm_text, we provide an inline keyboard
-        # for a direct link to the updates channel.
-        # This makes it more user-friendly as they don't have to go to PM.
+    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL): # Corrected: added AUTH_CHANNEL
+        # The following lines MUST be indented, typically by 4 spaces
         buttons = [[
             InlineKeyboardButton("📢 Join Updates Channel 📢", url=UPDATES_LINK)
         ]]
@@ -38,8 +35,8 @@ async def inline_search(bot, query):
             results=[],
             cache_time=0,
             switch_pm_text='🚫 Please join my channel to use me!',
-            switch_pm_parameter="subscribe", # This parameter can be used to identify if the user came from a subscription prompt
-            reply_markup=reply_markup # Add the inline keyboard here
+            switch_pm_parameter="subscribe",
+            reply_markup=reply_markup
         )
         return
 
