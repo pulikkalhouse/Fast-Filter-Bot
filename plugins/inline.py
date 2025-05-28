@@ -24,17 +24,21 @@ async def inline_search(bot, query):
         return
 
     # Force subscription check for inline queries
-    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL): # Corrected: added AUTH_CHANNEL
+    # First, get the list of subscription buttons (if any are needed)
+    required_sub_buttons = await is_subscribed(bot, query, AUTH_CHANNEL) # Now correctly passing AUTH_CHANNEL
+
+    # Check if AUTH_CHANNEL is enabled AND if required_sub_buttons is NOT empty
+    # If required_sub_buttons is not empty, it means the user is not subscribed to all channels.
+    if AUTH_CHANNEL and required_sub_buttons:
         # The following lines MUST be indented, typically by 4 spaces
-        buttons = [[
-            InlineKeyboardButton("📢 Join Updates Channel 📢", url=UPDATES_LINK)
-        ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
+        
+        # Use the buttons returned by is_subscribed directly
+        reply_markup = InlineKeyboardMarkup(required_sub_buttons)
 
         await query.answer(
             results=[],
             cache_time=0,
-            switch_pm_text='🚫 Please join my channel to use me!',
+            switch_pm_text='🚫 Please join my channel(s) to use me!', # Adjusted text for clarity
             switch_pm_parameter="subscribe",
             reply_markup=reply_markup
         )
