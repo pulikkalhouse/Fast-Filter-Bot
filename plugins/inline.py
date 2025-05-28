@@ -13,8 +13,8 @@ cache_time = 0 if AUTH_CHANNEL else CACHE_TIME
 
 # Sample list of image URLs for reply_photo (replace with actual image URLs)
 PICS = [
-    "https://example.com/image1.jpg",
-    "https://example.com/image2.jpg",
+    "https://graph.org/file/bdc720faf2ff35cf92563.jpg",
+    "https://graph.org/file/bdc720faf2ff35cf92563.jpg",
     # Add more image URLs as needed
 ]
 
