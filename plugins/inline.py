@@ -1,5 +1,6 @@
 import logging, time
 from pyrogram import Client, emoji, filters
+from pyrogram.enums import ParseMode
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
@@ -10,7 +11,7 @@ import random
 
 cache_time = 0 if AUTH_CHANNEL else CACHE_TIME
 
-# Sample list of image URLs for reply_photo (replace with your actual image URLs)
+# Sample list of image URLs for reply_photo (replace with actual image URLs)
 PICS = [
     "https://example.com/image1.jpg",
     "https://example.com/image2.jpg",
@@ -45,13 +46,12 @@ async def inline_search(bot, query):
                     switch_pm_text="You need to subscribe to my channel to use me!",
                     switch_pm_parameter="subscribe"
                 )
-                # Optionally, send a photo message in the chat where the inline query was triggered
-                await bot.send_photo(
+                # Send a message instead of a photo if PICS is empty or to avoid issues
+                await bot.send_message(
                     chat_id=query.from_user.id,
-                    photo=random.choice(PICS) if PICS else None,
-                    caption=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+                    text=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
                     reply_markup=reply_markup,
-                    parse_mode="html"
+                    parse_mode=ParseMode.HTML
                 )
             except Exception as e:
                 logging.error(f"Error sending subscription message: {e}")
@@ -117,7 +117,7 @@ async def check_subscription(bot, query):
             await query.message.edit(
                 text=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
                 reply_markup=reply_markup,
-                parse_mode="html"
+                parse_mode=ParseMode.HTML
             )
         else:
             await query.message.delete()  # Delete the subscription message if user is subscribed
