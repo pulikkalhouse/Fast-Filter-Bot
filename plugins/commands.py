@@ -129,17 +129,21 @@ mc = message.command[1]
 if mc.startswith('verify'):
     _, token = mc.split("_", 1)
     verify_status = await get_verify_status(message.from_user.id)
-    if verify_status['verify_token'] != token:
-        return await message.reply("Your verify token is invalid.")
-    await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
-    if verify_status["link"] == "":
-        reply_markup = None
-    else:
-        btn = [[
-            InlineKeyboardButton("📌 Get File 📌", url=f'https://t.me/{temp.U_NAME}?start={verify_status["link"]}')
-        ]]
-        reply_markup = InlineKeyboardMarkup(btn)
-mc = message.command[1]
+return
+
+
+    mc = message.command[1]
+
+    if mc.startswith('verify'):
+        _, token = mc.split("_", 1)
+        verify_status = await get_verify_status(message.from_user.id)
+        if verify_status['verify_token'] != token:
+            return await message.reply("Your verify token is invalid.")
+        await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
+return
+
+
+    mc = message.command[1]
 
     if mc.startswith('verify'):
         _, token = mc.split("_", 1)
@@ -173,21 +177,23 @@ mc = message.command[1]
     else:
         pass
 
-    settings = await get_settings(int(mc.split("_", 2)[1]))
     if settings.get('is_fsub', IS_FSUB):
-        btn = await is_subscribed(client, message, settings['fsub'])
-        if btn:
-            btn.append(
-                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
-            )
-            reply_markup = InlineKeyboardMarkup(btn)
-            await message.reply_photo(
-                photo=random.choice(PICS),
-                caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
-                reply_markup=reply_markup,
-                parse_mode=enums.ParseMode.HTML
-            )
-            return 
+    # This is where your `is_subscribed` function comes into play
+    btn = await is_subscribed(client, message, settings['fsub'])
+    if btn:
+        btn.append(
+            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+        )
+        reply_markup = InlineKeyboardMarkup(btn)
+        await message.reply_photo(
+            photo=random.choice(PICS),
+            caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+        return
+
+ 
         
     if mc.startswith('all'):
         _, grp_id, key = mc.split("_", 2)
