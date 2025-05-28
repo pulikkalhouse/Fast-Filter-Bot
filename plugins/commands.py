@@ -123,8 +123,7 @@ if not await db.has_premium_access(message.from_user.id):
             verify_token=token,
             link="" if mc == 'inline_verify' else mc
         )
-        link = await get_shortlink(
-            SHORTLINK_URL, SHORTLINK_API,
+        link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://t.me/{temp.U_NAME}?start=verify_{token}')
 mc = message.command[1]
 
 if mc.startswith('verify'):
