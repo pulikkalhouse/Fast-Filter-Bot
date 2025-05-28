@@ -24,7 +24,8 @@ async def inline_search(bot, query):
         return
 
     # Force subscription check for inline queries
-    if AUTH_CHANNEL and not await is_subscribed(bot, query):
+        if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
+
         # Instead of just switch_pm_text, we provide an inline keyboard
         # for a direct link to the updates channel.
         # This makes it more user-friendly as they don't have to go to PM.
