@@ -1,13 +1,21 @@
 import logging, time
 from pyrogram import Client, emoji, filters
-from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
+from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
 from database.users_chats_db import db
 from utils import is_subscribed, get_size, temp, get_verify_status, update_verify_status
 from info import CACHE_TIME, AUTH_CHANNEL, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION, IS_VERIFY, VERIFY_EXPIRE
+import random
 
 cache_time = 0 if AUTH_CHANNEL else CACHE_TIME
+
+# Sample list of image URLs for reply_photo (replace with your actual image URLs)
+PICS = [
+    "https://example.com/image1.jpg",
+    "https://example.com/image2.jpg",
+    # Add more image URLs as needed
+]
 
 def is_banned(query: InlineQuery):
     return query.from_user and query.from_user.id in temp.BANNED_USERS
@@ -18,31 +26,36 @@ async def inline_search(bot, query):
 
     if is_banned(query):
         await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text="You're a banned user :(",
-                           switch_pm_parameter="start")
+                          cache_time=0,
+                          switch_pm_text="You're banned user :(",
+                          switch_pm_parameter="start")
         return
 
-    # Force subscription check for inline queries
-    # First, get the list of subscription buttons (if any are needed)
-    required_sub_buttons = await is_subscribed(bot, query, AUTH_CHANNEL) # Now correctly passing AUTH_CHANNEL
-
-    # Check if AUTH_CHANNEL is enabled AND if required_sub_buttons is NOT empty
-    # If required_sub_buttons is not empty, it means the user is not subscribed to all channels.
-    if AUTH_CHANNEL and required_sub_buttons:
-        # The following lines MUST be indented, typically by 4 spaces
-        
-        # Use the buttons returned by is_subscribed directly
-        reply_markup = InlineKeyboardMarkup(required_sub_buttons)
-
-        await query.answer(
-            results=[],
-            cache_time=0,
-            switch_pm_text='🚫 Please join my channel(s) to use me!', # Adjusted text for clarity
-            switch_pm_parameter="subscribe",
-            reply_markup=reply_markup
-        )
-        return
+    if AUTH_CHANNEL:
+        btn = await is_subscribed(bot, query, AUTH_CHANNEL)
+        if btn:  # User is not subscribed
+            btn.append(
+                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#inline_{query.from_user.id}")]
+            )
+            reply_markup = InlineKeyboardMarkup(btn)
+            try:
+                await query.answer(
+                    results=[],
+                    cache_time=0,
+                    switch_pm_text="You need to subscribe to my channel to use me!",
+                    switch_pm_parameter="subscribe"
+                )
+                # Optionally, send a photo message in the chat where the inline query was triggered
+                await bot.send_photo(
+                    chat_id=query.from_user.id,
+                    photo=random.choice(PICS) if PICS else None,
+                    caption=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+                    reply_markup=reply_markup,
+                    parse_mode="html"
+                )
+            except Exception as e:
+                logging.error(f"Error sending subscription message: {e}")
+            return
 
     results = []
     string = query.query
@@ -51,7 +64,7 @@ async def inline_search(bot, query):
 
     for file in files:
         reply_markup = get_reply_markup()
-        f_caption=FILE_CAPTION.format(
+        f_caption = FILE_CAPTION.format(
             file_name=file.file_name,
             file_size=get_size(file.file_size),
             caption=file.caption
@@ -69,21 +82,20 @@ async def inline_search(bot, query):
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=results,
-                        is_personal = True,
-                        cache_time=cache_time,
-                        switch_pm_text=switch_pm_text,
-                        switch_pm_parameter="start",
-                        next_offset=str(next_offset))
+                          is_personal=True,
+                          cache_time=cache_time,
+                          switch_pm_text=switch_pm_text,
+                          switch_pm_parameter="start",
+                          next_offset=str(next_offset))
     else:
         switch_pm_text = f'{emoji.CROSS_MARK} No Results'
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=[],
-                           is_personal = True,
-                           cache_time=cache_time,
-                           switch_pm_text=switch_pm_text,
-                           switch_pm_parameter="start")
-
+                          is_personal=True,
+                          cache_time=cache_time,
+                          switch_pm_text=switch_pm_text,
+                          switch_pm_parameter="start")
 
 def get_reply_markup():
     buttons = [[
@@ -91,3 +103,27 @@ def get_reply_markup():
         InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
     ]]
     return InlineKeyboardMarkup(buttons)
+
+@Client.on_callback_query(filters.regex(r"^checksub#"))
+async def check_subscription(bot, query):
+    """Handle 'Try Again' callback for subscription check"""
+    try:
+        if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
+            btn = await is_subscribed(bot, query, AUTH_CHANNEL)
+            btn.append(
+                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#inline_{query.from_user.id}")]
+            )
+            reply_markup = InlineKeyboardMarkup(btn)
+            await query.message.edit(
+                text=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+                reply_markup=reply_markup,
+                parse_mode="html"
+            )
+        else:
+            await query.message.delete()  # Delete the subscription message if user is subscribed
+            await query.answer("Subscription verified! You can now use the bot.", show_alert=True)
+    except QueryIdInvalid:
+        await query.answer("The query is no longer valid.", show_alert=True)
+    except Exception as e:
+        logging.error(f"Error in check_subscription: {e}")
+        await query.answer("An error occurred. Please try again later.", show_alert=True)
