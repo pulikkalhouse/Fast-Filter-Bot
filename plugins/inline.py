@@ -23,7 +23,7 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
-    if not await is_subscribed(query.from_user.id, bot):
+    if not await is_subscribed(query.from_user.id, bot, AUTH_CHANNEL):
         invite_links = await create_invite_links(bot)
         first_link = next(iter(invite_links.values()), None)
         
