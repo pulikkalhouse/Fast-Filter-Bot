@@ -23,6 +23,26 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
+    if not await is_subscribed(query.from_user.id, bot):
+        invite_links = await create_invite_links(bot)
+        first_link = next(iter(invite_links.values()), None)
+        
+        if first_link:
+            await query.answer(
+                results=[],
+                cache_time=0,
+                switch_pm_text="📢 Please join the updates channel to use this bot",
+                switch_pm_parameter="subscribe"
+            )
+        else:
+            await query.answer(
+                results=[],
+                cache_time=0,
+                switch_pm_text="⚠️ Bot owner hasn't set up the required channels properly.",
+                switch_pm_parameter="error"
+            )
+        return
+
 
     results = []
     string = query.query
