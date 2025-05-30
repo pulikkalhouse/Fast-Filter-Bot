@@ -13,6 +13,8 @@ from utils import get_size, is_subscribed, is_check_admin, get_wish, get_shortli
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_file_details, get_search_results,delete_files
 from fuzzywuzzy import process
+from pyrogram.errors import MessageNotModified  # ✅ Import this at the top of your file if not already present
+
 
 BUTTONS = {}
 CAP = {}
@@ -502,16 +504,23 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
         return 
                 
+    
     elif query.data.startswith("checksub"):
         ident, mc = query.data.split("#")
         settings = await get_settings(int(mc.split("_", 2)[1]))
         btn = await is_subscribed(client, query, settings['fsub'])
         if btn:
-            await query.answer(f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.", show_alert=True)
+            await query.answer(
+                f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.",
+                show_alert=True
+            )
             btn.append(
                 [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
             )
-            await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+            try:
+                await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))  # ✅ FIXED
+            except MessageNotModified:
+                pass  # Nothing changed, so safely ignore
             return
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
         await query.message.delete()
@@ -521,7 +530,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         settings = await get_settings(int(chatid))
         btn = await is_subscribed(client, query, settings['fsub'])
         if btn:
-           await query.answer("Kindly Join Given Channel To Get Unmute", show_alert=True)
+            await query.answer("Kindly Join Given Channel To Get Unmute", show_alert=True)
         else:
             await client.unban_chat_member(query.message.chat.id, user_id)
             await query.answer("Unmuted Successfully !", show_alert=True)
