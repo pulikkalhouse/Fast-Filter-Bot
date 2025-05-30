@@ -22,14 +22,13 @@ async def inline_search(bot, query):
                            switch_pm_text="You're banned user :(",
                            switch_pm_parameter="start")
         return
-if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
-    await query.answer(
-        results=[],
-        cache_time=0,
-        switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 sub𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)',
-        switch_pm_parameter="subscribe"
-    )
-    return
+
+    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
+        await query.answer(results=[],
+                           cache_time=0,
+                           switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)',
+                           switch_pm_parameter="subscribe")
+        return
 
 
     results = []
