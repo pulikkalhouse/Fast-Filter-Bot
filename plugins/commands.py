@@ -96,6 +96,31 @@ async def start(client, message):
     # START PARAMETER HANDLING
     mc = message.command[1]
 
+    # HANDLE SUBSCRIBE PARAMETER (from inline.py force subscription)
+    if mc == 'subscribe':
+        # Check subscription status for AUTH_CHANNEL (list of channels)
+        btn = await is_subscribed(client, message, AUTH_CHANNEL)
+        if btn:
+            btn.append([
+                InlineKeyboardButton("🔁 Try Again 🔁", callback_data="check_auth_sub")
+            ])
+            reply_markup = InlineKeyboardMarkup(btn)
+            await message.reply_photo(
+                photo=random.choice(PICS),
+                caption=f"👋 Hello {mention},\n\nTo use inline search, please join my required channels and try again. 😇",
+                reply_markup=reply_markup,
+                parse_mode=enums.ParseMode.HTML
+            )
+        else:
+            # User is subscribed to all required channels
+            await message.reply(
+                "✅ Great! You're now subscribed to all required channels.\nYou can now use inline search! 🔍",
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton('🔎 Try Inline Search 🗂', switch_inline_query_current_chat='')
+                ]])
+            )
+        return
+
     # HANDLE VERIFY TOKEN
     if mc.startswith('verify'):
         try:
