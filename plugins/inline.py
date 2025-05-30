@@ -23,11 +23,21 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
         return
 
-    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
-        await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)',
-                           switch_pm_parameter="subscribe")
+    if AUTH_CHANNEL:
+    # Check subscription for all channels in AUTH_CHANNEL list
+    is_subscribed_to_all = True
+    for channel in AUTH_CHANNEL:
+        if not await is_subscribed(bot, query, [channel]):  # Pass single channel as list
+            is_subscribed_to_all = False
+            break
+    
+    if not is_subscribed_to_all:
+        await query.answer(
+            results=[], 
+            cache_time=0, 
+            switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)', 
+            switch_pm_parameter="subscribe"
+        )
         return
 
 
