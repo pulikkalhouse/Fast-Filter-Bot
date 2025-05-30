@@ -39,72 +39,9 @@ async def aiRes(_, message):
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     botid = client.me.id
-    if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        if not await db.get_chat(message.chat.id):
-            total = await client.get_chat_members_count(message.chat.id)
-            username = f'@{message.chat.username}' if message.chat.username else 'Private'
-            await client.send_message(LOG_CHANNEL, script.NEW_GROUP_TXT.format(message.chat.title, message.chat.id, username, total))       
-            await db.add_chat(message.chat.id, message.chat.title)
-        wish = get_wish()
-        btn = [[
-            InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
-            InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
-        ]]
-        await message.reply(text=f"<b>ʜᴇʏ {message.from_user.mention}, <i>{wish}</i>\nʜᴏᴡ ᴄᴀɴ ɪ ʜᴇʟᴘ ʏᴏᴜ??</b>", reply_markup=InlineKeyboardMarkup(btn))
-        return 
-        
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL, script.NEW_USER_TXT.format(message.from_user.mention, message.from_user.id))
-
-    verify_status = await get_verify_status(message.from_user.id)
-    if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-        await update_verify_status(message.from_user.id, is_verified=False)
-    
-    if (len(message.command) != 2) or (len(message.command) == 2 and message.command[1] == 'start'):
-        buttons = [[
-            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-                ],[
-                    InlineKeyboardButton('🌿 ꜱᴜᴘᴘᴏʀᴛ', callback_data="my_about"),
-                    InlineKeyboardButton('👤 ᴏᴡɴᴇʀ', callback_data='my_owner')
-                ],[
-                    InlineKeyboardButton('🍁 ғᴇᴀᴛᴜʀᴇs', callback_data='help'),
-                    InlineKeyboardButton('🔐 ᴅᴍᴄᴀ', callback_data='buy_premium')
-                ],[
-                    InlineKeyboardButton('🔎 ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🗂', switch_inline_query_current_chat='')
-                  ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_photo(
-            photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, get_wish()),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
-        )
-        return
-
-
-    mc = message.command[1]
-
-    if mc.startswith('verify'):
-        _, token = mc.split("_", 1)
-        verify_status = await get_verify_status(message.from_user.id)
-        if verify_status['verify_token'] != token:
-            return await message.reply("Your verify token is invalid.")
-        await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
-        if verify_status["link"] == "":
-            reply_markup = None
-        else:
-            btn = [[
-                InlineKeyboardButton("📌 Get File 📌", url=f'https://t.me/{temp.U_NAME}?start={verify_status["link"]}')
-            ]]
-            reply_markup = InlineKeyboardMarkup(btn)
-        await message.reply(f"✅ You successfully verified until: {get_readable_time(VERIFY_EXPIRE)}", reply_markup=reply_markup, protect_content=True)
-        return
-    
-    verify_status = await get_verify_status(message.from_user.id)
-@Client.on_message(filters.command("start") & filters.incoming)
-async def start(client, message):
-    botid = client.me.id
+    user_id = message.from_user.id
+    mention = message.from_user.mention
+    wish = get_wish()
 
     # GROUP JOIN HANDLING
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
@@ -113,29 +50,29 @@ async def start(client, message):
             username = f'@{message.chat.username}' if message.chat.username else 'Private'
             await client.send_message(LOG_CHANNEL, script.NEW_GROUP_TXT.format(message.chat.title, message.chat.id, username, total))       
             await db.add_chat(message.chat.id, message.chat.title)
-        wish = get_wish()
+
         btn = [[
             InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
             InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
         ]]
         await message.reply(
-            text=f"<b>ʜᴇʏ {message.from_user.mention}, <i>{wish}</i>\nʜᴏᴡ ᴄᴀɴ ɪ ʜᴇʟᴘ ʏᴏᴜ??</b>",
+            text=f"<b>ʜᴇʏ {mention}, <i>{wish}</i>\nʜᴏᴡ ᴄᴀɴ ɪ ʜᴇʟᴘ ʏᴏᴜ??</b>",
             reply_markup=InlineKeyboardMarkup(btn)
         )
         return 
 
     # NEW USER LOGGING
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL, script.NEW_USER_TXT.format(message.from_user.mention, message.from_user.id))
+    if not await db.is_user_exist(user_id):
+        await db.add_user(user_id, message.from_user.first_name)
+        await client.send_message(LOG_CHANNEL, script.NEW_USER_TXT.format(mention, user_id))
 
     # VERIFY STATUS RESET IF EXPIRED
-    verify_status = await get_verify_status(message.from_user.id)
+    verify_status = await get_verify_status(user_id)
     if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-        await update_verify_status(message.from_user.id, is_verified=False)
+        await update_verify_status(user_id, is_verified=False)
 
     # DEFAULT START MESSAGE (no args or /start start)
-    if (len(message.command) != 2) or (len(message.command) == 2 and message.command[1] == 'start'):
+    if len(message.command) != 2 or (len(message.command) == 2 and message.command[1] == 'start'):
         buttons = [[
             InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
         ], [
@@ -150,12 +87,13 @@ async def start(client, message):
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, get_wish()),
+            caption=script.START_TXT.format(mention, wish),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
         return
 
+    # START PARAMETER HANDLING
     mc = message.command[1]
 
     # HANDLE VERIFY TOKEN
@@ -164,12 +102,13 @@ async def start(client, message):
             _, token = mc.split("_", 1)
         except ValueError:
             return await message.reply("⚠️ Invalid verify link.")
-        
-        verify_status = await get_verify_status(message.from_user.id)
+
+        verify_status = await get_verify_status(user_id)
         if verify_status['verify_token'] != token:
             return await message.reply("Your verify token is invalid.")
-        
-        await update_verify_status(message.from_user.id, is_verified=True, verified_time=time.time())
+
+        await update_verify_status(user_id, is_verified=True, verified_time=time.time())
+
         if verify_status["link"] == "":
             reply_markup = None
         else:
@@ -177,7 +116,7 @@ async def start(client, message):
                 InlineKeyboardButton("📌 Get File 📌", url=f'https://t.me/{temp.U_NAME}?start={verify_status["link"]}')
             ]]
             reply_markup = InlineKeyboardMarkup(btn)
-        
+
         await message.reply(
             f"✅ You successfully verified until: {get_readable_time(VERIFY_EXPIRE)}",
             reply_markup=reply_markup,
@@ -185,12 +124,11 @@ async def start(client, message):
         )
         return
 
-    # TOKEN-BASED VERIFICATION FOR NON-PREMIUM USERS
-    verify_status = await get_verify_status(message.from_user.id)
-    if not await db.has_premium_access(message.from_user.id):
+    # NON-PREMIUM VERIFICATION TOKEN FLOW
+    if not await db.has_premium_access(user_id):
         if IS_VERIFY and not verify_status['is_verified']:
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-            await update_verify_status(message.from_user.id, verify_token=token, link="" if mc == 'inline_verify' else mc)
+            await update_verify_status(user_id, verify_token=token, link="" if mc == 'inline_verify' else mc)
             link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://t.me/{temp.U_NAME}?start=verify_{token}')
             btn = [[
                 InlineKeyboardButton("🧿 Verify 🧿", url=link)
@@ -204,7 +142,7 @@ async def start(client, message):
             )
             return
 
-    # SAFE SETTINGS FETCHING
+    # HANDLE FILE FETCH BASED ON START PARAM
     try:
         parts = mc.split("_", 2)
         if len(parts) < 2:
@@ -216,7 +154,7 @@ async def start(client, message):
         logging.error(f"Start param error: {e}")
         return
 
-    # FORCED SUBSCRIPTION
+    # FORCED SUBSCRIPTION CHECK
     if settings.get('is_fsub', IS_FSUB):
         btn = await is_subscribed(client, message, settings['fsub'])
         if btn:
@@ -226,16 +164,15 @@ async def start(client, message):
             reply_markup = InlineKeyboardMarkup(btn)
             await message.reply_photo(
                 photo=random.choice(PICS),
-                caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+                caption=f"👋 Hello {mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
                 reply_markup=reply_markup,
                 parse_mode=enums.ParseMode.HTML
             )
             return
-    
 
+    # Continue to actual file handling logic (not shown in your original snippet)
+    # e.g., fetch_file_by_settings(settings_id)...
 
-
-        
     if mc.startswith('all'):
         _, grp_id, key = mc.split("_", 2)
         files = temp.FILES.get(key)
