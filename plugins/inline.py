@@ -22,25 +22,13 @@ async def inline_search(bot, query):
                            switch_pm_text="You're banned user :(",
                            switch_pm_parameter="start")
         return
+return
 
-    if not await is_subscribed(query.from_user.id, bot, AUTH_CHANNEL):
-        invite_links = await create_invite_links(bot)
-        first_link = next(iter(invite_links.values()), None)
-        
-        if first_link:
-            await query.answer(
-                results=[],
-                cache_time=0,
-                switch_pm_text="📢 Please join the updates channel to use this bot",
-                switch_pm_parameter="subscribe"
-            )
-        else:
-            await query.answer(
-                results=[],
-                cache_time=0,
-                switch_pm_text="⚠️ Bot owner hasn't set up the required channels properly.",
-                switch_pm_parameter="error"
-            )
+    if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
+        await query.answer(results=[],
+                           cache_time=0,
+                           switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)',
+                           switch_pm_parameter="subscribe")
         return
 
 
