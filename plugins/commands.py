@@ -96,7 +96,28 @@ async def start(client, message):
     # START PARAMETER HANDLING
     mc = message.command[1]
 
-    # HANDLE VERIFY TOKEN
+    # ⛓️ HANDLE /start subscribe from inline query forced sub
+    if mc == "subscribe":
+        if AUTH_CHANNEL and not await is_subscribed(client, message, AUTH_CHANNEL):
+            try:
+                invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL))
+            except ChatAdminRequired:
+                logger.error("Make sure Bot is admin in Forcesub channel")
+                return
+
+            btn = [[
+                InlineKeyboardButton("📢 Join Updates Channel", url=invite_link.invite_link),
+                InlineKeyboardButton("⟳ Try Again ⟳", switch_inline_query_current_chat="")
+            ]]
+
+            await message.reply(
+                "**🔒 Access Denied!**\n\nYou must join the Updates Channel to use this bot.",
+                reply_markup=InlineKeyboardMarkup(btn),
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
+            return
+
+    # ✅ HANDLE VERIFY TOKEN
     if mc.startswith('verify'):
         try:
             _, token = mc.split("_", 1)
@@ -124,7 +145,7 @@ async def start(client, message):
         )
         return
 
-    # NON-PREMIUM VERIFICATION TOKEN FLOW
+    # 🔒 NON-PREMIUM VERIFICATION TOKEN FLOW
     if not await db.has_premium_access(user_id):
         if IS_VERIFY and not verify_status['is_verified']:
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -142,7 +163,7 @@ async def start(client, message):
             )
             return
 
-    # HANDLE FILE FETCH BASED ON START PARAM
+    # 🗂️ HANDLE FILE FETCH BASED ON START PARAM
     try:
         parts = mc.split("_", 2)
         if len(parts) < 2:
@@ -154,7 +175,7 @@ async def start(client, message):
         logging.error(f"Start param error: {e}")
         return
 
-    # FORCED SUBSCRIPTION CHECK
+    # 🚫 FORCED SUBSCRIPTION CHECK (file mode)
     if settings.get('is_fsub', IS_FSUB):
         btn = await is_subscribed(client, message, settings['fsub'])
         if btn:
@@ -170,8 +191,9 @@ async def start(client, message):
             )
             return
 
-    # Continue to actual file handling logic (not shown in your original snippet)
-    # e.g., fetch_file_by_settings(settings_id)...
+    # (Continue with your normal file fetch logic here...
+
+
 
     if mc.startswith('all'):
         _, grp_id, key = mc.split("_", 2)
