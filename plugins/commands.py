@@ -72,26 +72,50 @@ async def start(client, message):
         await update_verify_status(user_id, is_verified=False)
 
     # DEFAULT START MESSAGE (no args or /start start)
-    if len(message.command) != 2 or (len(message.command) == 2 and message.command[1] == 'start'):
-        buttons = [[
-            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-        ], [
-            InlineKeyboardButton('🌿 ꜱᴜᴘᴘᴏʀᴛ', callback_data="my_about"),
-            InlineKeyboardButton('👤 ᴏᴡɴᴇʀ', callback_data='my_owner')
-        ], [
-            InlineKeyboardButton('🍁 ғᴇᴀᴛᴜʀᴇs', callback_data='help'),
-            InlineKeyboardButton('🔐 ᴅᴍᴄᴀ', callback_data='buy_premium')
-        ], [
-            InlineKeyboardButton('🔎 ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🗂', switch_inline_query_current_chat='')
-        ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_photo(
-            photo=random.choice(PICS),
-            caption=script.START_TXT.format(mention, wish),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
-        )
-        return
+if len(message.command) != 2 or (len(message.command) == 2 and message.command[1] == 'start'):
+    # Loading animation before response
+    loading_msg = await message.reply("Loading...\n[□□□□□□□□□□] 0%")
+    progress = [
+        "[■■□□□□□□□□] 20%",
+        "[■■■□□□□□□□] 30%",
+        "[■■■■□□□□□□] 40%",
+        "[■■■■■□□□□□] 50%",
+        "[■■■■■■□□□□] 60%",
+        "[■■■■■■■□□□] 70%",
+        "[■■■■■■■■□□] 80%",
+        "[■■■■■■■■■□] 90%",
+        "[■■■■■■■■■■] 100%"
+    ]
+    for p in progress:
+        try:
+            await asyncio.sleep(0.4)
+            await loading_msg.edit_text(f"Loading...\n{p}")
+        except:
+            break
+
+    # Delete loading message before actual response
+    await loading_msg.delete()
+
+    # Show actual start message
+    buttons = [[
+        InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+    ], [
+        InlineKeyboardButton('🌿 ꜱᴜᴘᴘᴏʀᴛ', callback_data="my_about"),
+        InlineKeyboardButton('👤 ᴏᴡɴᴇʀ', callback_data='my_owner')
+    ], [
+        InlineKeyboardButton('🍁 ғᴇᴀᴛᴜʀᴇs', callback_data='help'),
+        InlineKeyboardButton('🔐 ᴅᴍᴄᴀ', callback_data='buy_premium')
+    ], [
+        InlineKeyboardButton('🔎 ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🗂', switch_inline_query_current_chat='')
+    ]]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    await message.reply_photo(
+        photo=random.choice(PICS),
+        caption=script.START_TXT.format(mention, wish),
+        reply_markup=reply_markup,
+        parse_mode=enums.ParseMode.HTML
+    )
+    return
         # HANDLE INLINE MODE FORCE SUBSCRIPTION
     if message.command[1] == "subscribe":
         btn = await is_subscribed(client, message, AUTH_CHANNEL)
