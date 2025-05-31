@@ -505,7 +505,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         return 
                 
     
-    elif query.data.startswith("checksub"):
+    elif query.data.startswith("checksub") and not query.data == "checksub#inline":
         ident, mc = query.data.split("#")
         settings = await get_settings(int(mc.split("_", 2)[1]))
         btn = await is_subscribed(client, query, settings['fsub'])
