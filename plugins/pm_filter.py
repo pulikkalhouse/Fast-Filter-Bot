@@ -506,43 +506,39 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 
     
     elif query.data.startswith("checksub") and not query.data == "checksub#inline":
-        ident, mc = query.data.split("#")
-        settings = await get_settings(int(mc.split("_", 2)[1]))
-        btn = await is_subscribed(client, query, settings['fsub'])
-        if btn:
-            await query.answer(
-                f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.",
-                show_alert=True
-            )
-            btn.append(
-                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
-            )
-            try:
-                await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))  # ✅ FIXED
-            except MessageNotModified:
-                pass  # Nothing changed, so safely ignore
-            return
-        await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
+    ident, mc = query.data.split("#")
+    settings = await get_settings(int(mc.split("_", 2)[1]))
+    btn = await is_subscribed(client, query, settings['fsub'])
+    if btn:
+        await query.answer(
+            f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.",
+            show_alert=True
+        )
+        btn.append(
+            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+        )
+        try:
+            await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+        except MessageNotModified:
+            pass
+        return
+    await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
+    await query.message.delete()
+
+elif query.data == "checksub#inline":
+    btn = await is_subscribed(client, query, AUTH_CHANNEL)
+    if btn:
+        await query.answer("❗ Please join all required channels first.", show_alert=True)
+        btn.append([
+            InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#inline")
+        ])
+        try:
+            await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+        except MessageNotModified:
+            pass
+    else:
+        await query.answer("✅ You're subscribed. You can now use inline mode.", show_alert=True)
         await query.message.delete()
-
-    elif query.data == "checksub#inline":
-        btn = await is_subscribed(client, query, AUTH_CHANNEL)
-        if btn:
-            await query.answer("❗ Please join all required channels first.", show_alert=True)
-
-            # Regenerate same buttons + Try Again
-            btn.append([
-                InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#inline")
-            ])
-            new_markup = InlineKeyboardMarkup(btn)
-
-            # Only edit if it's different
-            if query.message.reply_markup != new_markup:
-                await query.edit_message_reply_markup(reply_markup=new_markup)
-
-        else:
-            await query.answer("✅ You're subscribed. You can now use inline mode.", show_alert=True)
-            await query.message.delete()
             
     elif query.data.startswith("unmuteme"):
         ident, chatid = query.data.split("#")
