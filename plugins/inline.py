@@ -121,7 +121,7 @@ async def check_subscription(bot, query):
     try:
         if AUTH_CHANNEL and not await is_subscribed(bot, query, AUTH_CHANNEL):
             btn = await is_subscribed(bot, query, AUTH_CHANNEL)
-            btn.append([InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#inline_{query.from_user.id}")])
+            btn.append([InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")])
             reply_markup = InlineKeyboardMarkup(btn)
 
             current_text = query.message.text or query.message.caption or ""
