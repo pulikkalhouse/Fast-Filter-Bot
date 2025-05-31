@@ -92,6 +92,23 @@ async def start(client, message):
             parse_mode=enums.ParseMode.HTML
         )
         return
+        # HANDLE INLINE MODE FORCE SUBSCRIPTION
+    if message.command[1] == "subscribe":
+        btn = await is_subscribed(client, message, AUTH_CHANNEL)
+        if btn:
+            btn.append([InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#inline")])
+            await message.reply_photo(
+                photo=random.choice(PICS),
+                caption=f"👋 Hello {mention},\n\nPlease join all required channels and try again to use inline mode. 😇",
+                reply_markup=InlineKeyboardMarkup(btn),
+                parse_mode=enums.ParseMode.HTML
+            )
+        else:
+            await message.reply(
+                f"✅ You’re already subscribed!\nNow try using inline search by typing:\n<code>@{temp.U_NAME} filename</code>",
+                parse_mode=enums.ParseMode.HTML
+            )
+        return
 
     # START PARAMETER HANDLING
     mc = message.command[1]
