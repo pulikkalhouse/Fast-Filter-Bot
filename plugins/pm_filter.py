@@ -528,7 +528,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "checksub#inline":
         btn = await is_subscribed(client, query, AUTH_CHANNEL)
         if btn:
-            await query.answer("Please join all required channels first.", show_alert=True)
+            await query.answer("❗ Please join all required channels first.", show_alert=True)
             btn.append([
                 InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#inline")
             ])
@@ -536,7 +536,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 reply_markup=InlineKeyboardMarkup(btn)
             )
         else:
-            await query.answer("✅ You're subscribed. Try inline search now.")
+            await query.answer("✅ You're subscribed. You can now use inline mode.", show_alert=True)
             await query.message.delete()
 
     elif query.data.startswith("unmuteme"):
