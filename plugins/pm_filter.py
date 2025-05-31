@@ -525,6 +525,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
         await query.message.delete()
 
+    elif query.data == "checksub#inline":
+        btn = await is_subscribed(client, query, AUTH_CHANNEL)
+        if btn:
+            await query.answer("Please join all required channels first.", show_alert=True)
+            btn.append([
+                InlineKeyboardButton("🔁 Try Again 🔁", callback_data="checksub#inline")
+            ])
+            await query.edit_message_reply_markup(
+                reply_markup=InlineKeyboardMarkup(btn)
+            )
+        else:
+            await query.answer("✅ You're subscribed. Try inline search now.")
+            await query.message.delete()
+
     elif query.data.startswith("unmuteme"):
         ident, chatid = query.data.split("#")
         settings = await get_settings(int(chatid))
