@@ -88,7 +88,7 @@ async def start(client, message):
         ]
         for p in progress:
             try:
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(0.111)
                 await loading_msg.edit_text(f"Loading...\n{p}")
             except:
                 break
