@@ -95,7 +95,7 @@ VERIFY_EXPIRE = int(environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
 WELCOME_TEXT = environ.get("WELCOME_TEXT", script.WELCOME_TEXT)
 INDEX_EXTENSIONS = [extensions.lower() for extensions in environ.get('INDEX_EXTENSIONS', 'mkv mp4 avi mov wmv flv webm mpeg mpg 3gp m4v ts m2ts vob rm rmvb f4v ogv mts').split()]
 STICKERS_IDS = (
-    "CAACAgQAAxkBAAEK99dlfC7LDqnuwtGRkIoacot_dGC4zQACbg8AAuHqsVDaMQeY6CcRojME CAACAgQAAxkBAAELqxll8CcG-MZx9mIOXgaHSzLc9uyxswACaxQAAlrdEVOJDG3cIZuWLzQE"
+    "CAACAgQAAxkBAAEOhYRoKyITQkzK8paqqrF5uEh8VakymAACyxQAAn7WaFEz_uHI6TxiXzYE CAACAgEAAxkBAAEOiGhoLR5Qda7qpu3YxaO5GQFHTh4sHgACSgMAAm_XGETUUhY0_9qHgzYE"
 ).split()
 
 # boolean settings 
