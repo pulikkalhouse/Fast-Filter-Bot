@@ -542,7 +542,7 @@ async def set_tutorial(client, message):
     await save_group_settings(grp_id, 'tutorial', tutorial)
     await message.reply_text(f"Successfully changed tutorial for {title} to\n\n{tutorial}")
 
-@Client.on_message(filters.command('set_fsub'))
+@Client.on_message(filters.command('set_fsub') & filters.user(ADMINS))
 async def set_fsub(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
