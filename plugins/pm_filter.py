@@ -519,7 +519,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
         await query.message.delete()
 
-elif query.data == "checksub#inline":
+    elif query.data == "checksub#inline":
     btn = await is_subscribed(client, query, AUTH_CHANNEL)
     if btn:
         await query.answer("❗ Please join all required channels first.", show_alert=True)
