@@ -40,10 +40,9 @@ async def inline_search(bot, query: InlineQuery):
     string = query.query
     offset = int(query.offset or 0)
     files, next_offset, total = await get_search_results(string, offset=offset)
-    reply_markup = get_reply_markup(query=string)
 
     for file in files:
-        reply_markup = get_reply_markup()
+        reply_markup = get_reply_markup(query=string)
         f_caption = FILE_CAPTION.format(
             file_name=file.file_name,
             file_size=get_size(file.file_size),
