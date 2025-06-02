@@ -40,6 +40,7 @@ async def inline_search(bot, query: InlineQuery):
     string = query.query
     offset = int(query.offset or 0)
     files, next_offset, total = await get_search_results(string, offset=offset)
+    reply_markup = get_reply_markup(query=string)
 
     for file in files:
         reply_markup = get_reply_markup()
