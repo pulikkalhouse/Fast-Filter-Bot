@@ -72,15 +72,12 @@ async def inline_search(bot, query: InlineQuery):
     )
 
 
-def get_reply_markup(s):
+def get_reply_markup():
     buttons = [[
-        InlineKeyboardButton('🔎 Search Again', switch_inline_query_current_chat=s or '')
-    ],[
         InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
         InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
     ]]
     return InlineKeyboardMarkup(buttons)
-
 
 # ✅ Handle /start subscribe here
 @Client.on_message(filters.private & filters.command("start"))
