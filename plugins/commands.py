@@ -326,7 +326,7 @@ async def stats(bot, message):
     uptime = get_readable_time(time.time() - temp.START_TIME)
     await msg.edit(script.STATUS_TXT.format(files, users, chats, u_size, f_size, uptime))    
     
-@Client.on_message(filters.command('settings'))
+@Client.on_message(filters.command('settings') & filters.user(ADMINS))
 async def settings(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -380,7 +380,7 @@ async def settings(client, message):
     else:
         await message.reply_text('Something went wrong!')
 
-@Client.on_message(filters.command('set_template'))
+@Client.on_message(filters.command('set_template') & filters.user(ADMINS))
 async def save_template(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -399,7 +399,7 @@ async def save_template(client, message):
     await save_group_settings(grp_id, 'template', template)
     await message.reply_text(f"Successfully changed template for {title} to\n\n{template}")  
     
-@Client.on_message(filters.command('set_caption'))
+@Client.on_message(filters.command('set_caption') & filters.user(ADMINS))
 async def save_caption(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -418,7 +418,7 @@ async def save_caption(client, message):
     await save_group_settings(grp_id, 'caption', caption)
     await message.reply_text(f"Successfully changed caption for {title} to\n\n{caption}")
         
-@Client.on_message(filters.command('set_shortlink'))
+@Client.on_message(filters.command('set_shortlink') & filters.user(ADMINS))
 async def save_shortlink(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -442,7 +442,7 @@ async def save_shortlink(client, message):
     await save_group_settings(grp_id, 'api', api)
     await message.reply_text(f"Successfully changed shortlink for {title} to\n\nURL - {url}\nAPI - {api}")
     
-@Client.on_message(filters.command('get_custom_settings'))
+@Client.on_message(filters.command('get_custom_settings') & filters.user(ADMINS))
 async def get_custom_settings(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -475,7 +475,7 @@ Force Channels: {str(settings['fsub'])[1:-1] if settings['fsub'] else 'Not Set'}
     ]]
     await message.reply_text(text, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
 
-@Client.on_message(filters.command('set_welcome'))
+@Client.on_message(filters.command('set_welcome') & filters.user(ADMINS))
 async def save_welcome(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -523,7 +523,7 @@ async def delete_all_index(bot, message):
         return await message.reply_text('Not have files to delete')
     await message.reply_text(f'Total {files} files have.\nDo you want to delete all?', reply_markup=InlineKeyboardMarkup(btn))
 
-@Client.on_message(filters.command('set_tutorial'))
+@Client.on_message(filters.command('set_tutorial') & filters.user(ADMINS))
 async def set_tutorial(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
@@ -587,7 +587,7 @@ async def ping(client, message):
     end_time = time.monotonic()
     await msg.edit(f'{round((end_time - start_time) * 1000)} ms')
     
-@Client.on_message(filters.command("add_premium"))
+@Client.on_message(filters.command("add_premium") & filters.user(ADMINS))
 async def give_premium_cmd_handler(client, message):
     if message.from_user.id not in ADMINS:
         return
@@ -610,7 +610,7 @@ async def give_premium_cmd_handler(client, message):
     else:
         await message.reply_text("<b>Usage: /add_premium user_id time \n\nExample /add_premium 1252789 10day \n\n(e.g. for time units '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')</b>")
         
-@Client.on_message(filters.command("remove_premium"))
+@Client.on_message(filters.command("remove_premium") & filters.user(ADMINS))
 async def remove_premium_cmd_handler(client, message):
     if message.from_user.id not in ADMINS:
         return
@@ -633,7 +633,7 @@ async def remove_premium_cmd_handler(client, message):
     else:
         await message.reply_text("Usage: /remove_premium user_id")
         
-@Client.on_message(filters.command("plans"))
+@Client.on_message(filters.command("plans") & filters.user(ADMINS))
 async def plans_cmd_handler(client, message):                
     btn = [            
         [InlineKeyboardButton("ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴘᴛ 🧾", url="t.me/Rk_botowner")],
@@ -646,7 +646,7 @@ async def plans_cmd_handler(client, message):
         reply_markup=reply_markup
     )
         
-@Client.on_message(filters.command("my_plan"))
+@Client.on_message(filters.command("my_plan") & filters.user(ADMINS))
 async def check_plans_cmd(client, message):
     user_id  = message.from_user.id
     if await db.has_premium_access(user_id):         
