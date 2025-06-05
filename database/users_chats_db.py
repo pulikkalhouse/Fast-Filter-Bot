@@ -3,8 +3,18 @@ from info import DATABASE_NAME, IMDB_TEMPLATE, WELCOME_TEXT, AUTH_CHANNEL, LINK_
 import time
 import datetime
 
-client = AsyncIOMotorClient(DATABASE_URL)
+# Main DB
+client = AsyncIOMotorClient(DATA_DATABASE_URL)
 mydb = client[DATABASE_NAME]
+
+# Files DB
+files_db_client = AsyncIOMotorClient(FILES_DATABASE_URL)
+files_db = files_db_client[DATABASE_NAME]
+
+# Second Files DB
+if SECOND_FILES_DATABASE_URL:
+    second_files_db_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
+    second_files_db = second_files_db_client[DATABASE_NAME]
 
 class Database:
     default_setgs = {
@@ -203,5 +213,16 @@ class Database:
         expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
         user_data = {"id": user_id, "expiry_time": expiry_time, "has_free_trial": True}
         await self.users.update_one({"id": user_id}, {"$set": user_data}, upsert=True)
+
+        #multiple db utilities
+        async def get_files_db_size(self):
+        return (await files_db.command("dbstats"))['dataSize']
+   
+    async def get_second_files_db_size(self):
+        return (await second_files_db.command("dbstats"))['dataSize']
+    
+    async def get_data_db_size(self):
+        return (await mydb.command("dbstats"))['dataSize']
+
         
 db = Database()
