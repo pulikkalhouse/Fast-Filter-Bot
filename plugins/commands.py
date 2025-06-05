@@ -315,16 +315,26 @@ async def channels_info(bot, message):
     text += f'\n**Total:** {len(ids)}'
     await message.reply(text)
 
-@Client.on_message(filters.command('stats') & filters.user(ADMINS))
+@Client.on_message(filters.command('stats'))
 async def stats(bot, message):
-    msg = await message.reply('Please Wait...')
+    user_id = message.from_user.id
+    if user_id not in ADMINS:
+        await message.delete()
+        return
     files = await Media.count_documents()
+    secnd_files = await SecondMedia.count_documents()
     users = await db.total_users_count()
     chats = await db.total_chat_count()
-    u_size = get_size(await db.get_db_size())
-    f_size = get_size(536870912 - await db.get_db_size())
-    uptime = get_readable_time(time.time() - temp.START_TIME)
-    await msg.edit(script.STATUS_TXT.format(files, users, chats, u_size, f_size, uptime))    
+    used_files_db_size = get_size(await db.get_files_db_size())
+    used_data_db_size = get_size(await db.get_data_db_size())
+
+    if SECOND_FILES_DATABASE_URL:
+        secnd_files_db_used_size = get_size(await db.get_second_files_db_size())
+    else:
+        secnd_files_db_used_size = '-'
+
+    uptime = get_readable_time(time_now() - temp.START_TIME)
+    await message.reply_text(script.STATUS_TXT.format(users, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime))    
     
 @Client.on_message(filters.command('settings') & filters.user(ADMINS))
 async def settings(client, message):
