@@ -3,13 +3,16 @@ import re
 import base64
 from struct import pack
 from pyrogram.file_id import FileId
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, OperationFailure
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
+from info import FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
 
-client = AsyncIOMotorClient(DATABASE_URL)
+logger = logging.getLogger(__name__)
+
+# Primary database
+client = AsyncIOMotorClient(FILES_DATABASE_URL)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
@@ -23,6 +26,30 @@ class Media(Document):
     class Meta:
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
+        strict = False
+
+# Second database (if configured)
+second_client = None
+second_db = None
+second_instance = None
+SecondMedia = None
+
+if SECOND_FILES_DATABASE_URL:
+    second_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
+    second_db = second_client[DATABASE_NAME]
+    second_instance = Instance.from_db(second_db)
+
+    @second_instance.register
+    class SecondMedia(Document):
+        file_id = fields.StrField(attribute='_id')
+        file_name = fields.StrField(required=True)
+        file_size = fields.IntField(required=True)
+        caption = fields.StrField(allow_none=True)
+
+        class Meta:
+            indexes = ('$file_name', )
+            collection_name = COLLECTION_NAME
+            strict = False
 
 # Clean strings from unwanted characters
 def clean_string(s):
@@ -114,15 +141,35 @@ async def save_file(message, media):
     else:
         try:
             await file.commit()
+            print(f'[DB] Saved - {file_name}')
+            return 'suc'
         except DuplicateKeyError:
             print(f'[DB] Duplicate - {file_name}')
             return 'dup'
+        except OperationFailure:  # if 1st db is full
+            if SECOND_FILES_DATABASE_URL and SecondMedia:
+                try:
+                    second_file = SecondMedia(
+                        file_id=file_id,
+                        file_name=file_name,
+                        file_size=media.file_size,
+                        caption=file_caption
+                    )
+                    await second_file.commit()
+                    print(f'[DB] Saved to 2nd db - {file_name}')
+                    return 'suc'
+                except DuplicateKeyError:
+                    print(f'[DB] Already Saved in 2nd db - {file_name}')
+                    return 'dup'
+                except Exception as e:
+                    logging.exception(f"Commit error for second db {file_name}: {e}")
+                    return 'err'
+            else:
+                logging.exception(f"Primary db operation failed and no second db configured: {file_name}")
+                return 'err'
         except Exception as e:
             logging.exception(f"Commit error for {file_name}: {e}")
             return 'err'
-        else:
-            print(f'[DB] Saved - {file_name}')
-            return 'suc'
 
 # For search-based retrieval
 async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
@@ -140,16 +187,23 @@ async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
         regex = query
 
     filter = {'file_name': regex}
+    
+    # Get results from primary database
     cursor = Media.find(filter).sort('$natural', -1)
+    results = [doc async for doc in cursor]
+    
+    # Get results from second database if configured
+    if SECOND_FILES_DATABASE_URL and SecondMedia:
+        cursor2 = SecondMedia.find(filter).sort('$natural', -1)
+        results.extend([doc async for doc in cursor2])
 
     if lang:
-        lang_files = [file async for file in cursor if lang in file.file_name.lower()]
+        lang_files = [file for file in results if lang in file.file_name.lower()]
         files = lang_files[offset:][:max_results]
         total_results = len(lang_files)
     else:
-        cursor.skip(offset).limit(max_results)
-        files = await cursor.to_list(length=max_results)
-        total_results = await Media.count_documents(filter)
+        total_results = len(results)
+        files = results[offset:][:max_results]
 
     next_offset = offset + max_results
     if next_offset >= total_results:
@@ -172,13 +226,30 @@ async def delete_files(query):
         regex = query
 
     filter = {'file_name': regex}
-    total = await Media.count_documents(filter)
-    files = Media.find(filter)
-    return total, files
+    
+    # Get results from primary database
+    cursor = Media.find(filter)
+    results = [doc async for doc in cursor]
+    
+    # Get results from second database if configured
+    if SECOND_FILES_DATABASE_URL and SecondMedia:
+        cursor2 = SecondMedia.find(filter)
+        results.extend([doc async for doc in cursor2])
+    
+    total = len(results)
+    return total, results
 
 # For getting full file details
 async def get_file_details(query):
     filter = {'file_id': query}
+    
+    # Search in primary database first
     cursor = Media.find(filter)
     filedetails = await cursor.to_list(length=1)
+    
+    # If not found and second database exists, search there
+    if not filedetails and SECOND_FILES_DATABASE_URL and SecondMedia:
+        cursor2 = SecondMedia.find(filter)
+        filedetails = await cursor2.to_list(length=1)
+    
     return filedetails
