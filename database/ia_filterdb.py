@@ -141,7 +141,7 @@ async def save_file(message, media):
     else:
         try:
             await file.commit()
-            print(f'[DB] Saved - {file_name}')
+            print(f'[DB] Saved to 1st db - {file_name}')
             return 'suc'
         except DuplicateKeyError:
             print(f'[DB] Duplicate - {file_name}')
