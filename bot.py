@@ -3,7 +3,7 @@ from database.ia_filterdb import Media
 from aiohttp import web
 from database.users_chats_db import db
 from web import web_app
-from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, SUPPORT_GROUP
+from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, SUPPORT_GROUP, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
@@ -22,11 +22,40 @@ class Bot(Client):
         )
 
     async def start(self):
+        try:
+            await super().start()
+        except FloodWait as e:
+            time_ = get_readable_time(e.value)
+            logger.warning(f"Flood Wait Occured, Wait For: {time_}")
+            asyncio.sleep(e.value)
+            logger.info("Now Ready For Deploying !")
         temp.START_TIME = time.time()
+        data_db = MongoClient(DATA_DATABASE_URL, server_api=ServerApi('1'))
+        try:
+            data_db.admin.command('ping')
+            logger.info("Successfully connected to DATA_DATABASE_URL")
+        except Exception as e:
+            logger.error("Make sure DATA_DATABASE_URL is correct, exiting now")
+            exit()
         b_users, b_chats = await db.get_banned()
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
-        await super().start()
+        files_db = MongoClient(FILES_DATABASE_URL, server_api=ServerApi('1'))
+        try:
+            files_db.admin.command('ping')
+            logger.info("Successfully connected to FILES_DATABASE_URL")
+        except Exception as e:
+            logger.error("Make sure FILES_DATABASE_URL is correct, exiting now")
+            exit()
+        if SECOND_FILES_DATABASE_URL:
+            secnd_files_db = MongoClient(SECOND_FILES_DATABASE_URL, server_api=ServerApi('1'))
+            try:
+                secnd_files_db.admin.command('ping')
+                logger.info("Successfully connected to SECOND_FILES_DATABASE_URL")
+            except:
+                logger.error("Make sure SECOND_FILES_DATABASE_URL is correct, exiting now")
+                exit()
+
         if os.path.exists('restart.txt'):
             with open("restart.txt") as file:
                 chat_id, msg_id = map(int, file)
@@ -41,33 +70,31 @@ class Bot(Client):
         temp.ME = me.id
         temp.U_NAME = me.username
         temp.B_NAME = me.first_name
-        temp.B_LINK = me.mention
         username = '@' + me.username
+        logger.info(f"{me.first_name} is started now 🤗 (DC ID - {me.dc_id})")
         app = web.AppRunner(web_app)
         await app.setup()
         await web.TCPSite(app, "0.0.0.0", PORT).start()
         try:
             await self.send_message(chat_id=LOG_CHANNEL, text=f"<b>{me.mention} Restarted! 🤖</b>")
         except:
-            print("Error - Make sure bot admin in LOG_CHANNEL, exiting now")
+            logger.error("Make sure bot admin in LOG_CHANNEL, exiting now")
             exit()
         try:
             m = await self.send_message(chat_id=BIN_CHANNEL, text="Test")
             await m.delete()
         except:
-            print("Error - Make sure bot admin in BIN_CHANNEL, exiting now")
+            logger.error("Make sure bot admin in BIN_CHANNEL, exiting now")
             exit()
-        try:
-            await self.send_message(chat_id=SUPPORT_GROUP, text=f"<b>{me.mention} Restarted! 🤖</b>")
-        except:
-            print("Error - Make sure bot admin in SUPPORT GROUP, exiting now")
-            exit()
-        print(f"\nPyrogram [v{__version__}] Bot [{username}] Started With Python [v{platform.python_version()}]\n")
-
+        for admin in ADMINS:
+            try:
+                await self.send_message(chat_id=admin, text="<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ</b>")
+            except:
+                logger.warning(f"Admin ({admin}) not started this bot yet")
 
     async def stop(self, *args):
         await super().stop()
-        print("Bot Stopped! Bye...")
+        logger.info("Bot Stopped! Bye...")
 
 
     async def iter_messages(self: Client, chat_id: Union[int, str], limit: int, offset: int = 0) -> Optional[AsyncGenerator["types.Message", None]]:
