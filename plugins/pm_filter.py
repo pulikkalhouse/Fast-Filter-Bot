@@ -599,15 +599,21 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if query.from_user.id not in ADMINS:
             return await query.answer("ADMINS Only!", show_alert=True)
         files = await Media.count_documents()
+        secnd_files = await SecondMedia.count_documents()
         users = await db.total_users_count()
         chats = await db.total_chat_count()
-        u_size = get_size(await db.get_db_size())
-        f_size = get_size(536870912 - await db.get_db_size())
-        uptime = get_readable_time(time.time() - temp.START_TIME)
+        used_files_db_size = get_size(await db.get_files_db_size())
+        used_data_db_size = get_size(await db.get_data_db_size())
+
+        if SECOND_FILES_DATABASE_URL:
+            secnd_files_db_used_size = get_size(await db.get_second_files_db_size())
+        else:
+            secnd_files_db_used_size = '-'
+        uptime = get_readable_time(time_now() - temp.START_TIME)
         buttons = [[
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='my_about')
         ]]
-        await query.message.edit_text(script.STATUS_TXT.format(files, users, chats, u_size, f_size, uptime), reply_markup=InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(script.STATUS_TXT.format(users, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime), reply_markup=InlineKeyboardMarkup(buttons)
         )
         
     elif query.data == "my_owner":
