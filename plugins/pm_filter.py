@@ -11,7 +11,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid, ChatAdminRequired
 from utils import get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_verify_status, update_verify_status, get_readable_time, get_poster, temp, get_settings, save_group_settings , imdb
 from database.users_chats_db import db
-from database.ia_filterdb import Media, get_file_details, get_search_results,delete_files
+from database.ia_filterdb import Media, get_file_details, get_search_results, delete_files, SecondMedia
 from fuzzywuzzy import process
 from pyrogram.errors import MessageNotModified  # ✅ Import this at the top of your file if not already present
 
