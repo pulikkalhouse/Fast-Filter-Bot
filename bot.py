@@ -7,7 +7,11 @@ logging.basicConfig(
 logging.getLogger('pyrogram').setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
-from pyrogram import Client, __version__
+import os
+import time
+import asyncio
+from pyrogram import Client, __version__, types
+from pyrogram.errors import FloodWait
 from database.ia_filterdb import Media
 from aiohttp import web
 from database.users_chats_db import db
