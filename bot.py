@@ -101,11 +101,12 @@ class Bot(Client):
         except:
             logger.error("Make sure bot admin in BIN_CHANNEL, exiting now")
             exit()
-        for admin in ADMINS:
-            try:
-                await self.send_message(chat_id=admin, text="<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ</b>")
-            except:
-                logger.warning(f"Admin ({admin}) not started this bot yet")
+        try:
+            await self.send_message(chat_id=SUPPORT_GROUP, text=f"<b>{me.mention} Restarted! 🤖</b>")
+        except:
+            print("Error - Make sure bot admin in SUPPORT GROUP, exiting now")
+            exit()
+
 
     async def stop(self, *args):
         await super().stop()
