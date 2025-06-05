@@ -68,12 +68,19 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATABASE_URL = environ.get('DATABASE_URL', "") #mongo db url
-if len(DATABASE_URL) == 0:
-    print('Error - DATABASE_URL is missing, exiting now')
+DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "")
+if len(DATA_DATABASE_URL) == 0:
+    logger.error('DATA_DATABASE_URL is missing, exiting now')
     exit()
-DATABASE_NAME = environ.get('DATABASE_NAME', "PIRO")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'FILES')
+FILES_DATABASE_URL = environ.get('FILES_DATABASE_URL', "")
+if len(FILES_DATABASE_URL) == 0:
+    logger.error('FILES_DATABASE_URL is missing, exiting now')
+    exit()
+SECOND_FILES_DATABASE_URL = environ.get('SECOND_FILES_DATABASE_URL', "")
+if len(SECOND_FILES_DATABASE_URL) == 0:
+    logger.info('SECOND_FILES_DATABASE_URL is empty')
+DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
 
 # Links
 SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/DramaXShip')
