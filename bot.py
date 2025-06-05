@@ -1,3 +1,12 @@
+import logging
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+logging.getLogger('pyrogram').setLevel(logging.ERROR)
+logger = logging.getLogger(__name__)
+
 from pyrogram import Client, __version__
 from database.ia_filterdb import Media
 from aiohttp import web
