@@ -12,7 +12,7 @@ from database.ia_filterdb import Media
 from aiohttp import web
 from database.users_chats_db import db
 from web import web_app
-from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, SUPPORT_GROUP, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL
+from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, SUPPORT_GROUP, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, ADMINS, AUTH_CHANNEL
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
