@@ -12,14 +12,17 @@ class script(object):
 ★ Username: @KichuTG
 ★ Update Channel : @AM_FILMS"""
 
-    STATUS_TXT = """<b>╭━━━━━━━━❰sᴛᴀᴛᴜs ʙᴀʀ❱══❍⊱❁۪۪
-┣⪼𖨠 🗃️ ᴛᴏᴛᴀʟ ꜰɪʟᴇs: <code>{}</code>
-┣⪼𖨠 👤 ᴛᴏᴛᴀʟ ᴜsᴇʀs: <code>{}</code>
-┣⪼𖨠 ♻️ ᴛᴏᴛᴀʟ ᴄʜᴀᴛs: <code>{}</code>
-┣⪼𖨠 ✨ ᴜsᴇᴅ sᴛᴏʀᴀɢᴇ: <code>{}</code>
-┣⪼𖨠 🆓 ꜰʀᴇᴇ sᴛᴏʀᴀɢᴇ: <code>{}</code>
-┣⪼𖨠 🚀 ʙᴏᴛ ᴜᴩᴛɪᴍᴇ : <code>{}</code> 
-╰━━━━━━━━━━━━━━━━══❍⊱❁۪۪</b>"""
+    STATUS_TXT = """👤 Total Users: <code>{}</code>
+👥 Total Chats: <code>{}</code>
+🗳 Data database used: <code>{}</code>
+
+🗂 1st database Files: <code>{}</code>
+🗳 1st files database used: <code>{}</code>
+
+🗂 2nd database Files: <code>{}</code>
+🗳 2nd files database used: <code>{}</code>
+
+🚀 Bot Uptime: <code>{}</code>"""
 
     NEW_GROUP_TXT = """#NewGroup
 Title - {}
