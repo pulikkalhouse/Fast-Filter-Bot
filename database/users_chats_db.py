@@ -215,7 +215,7 @@ class Database:
         await self.users.update_one({"id": user_id}, {"$set": user_data}, upsert=True)
 
         #multiple db utilities
-        async def get_files_db_size(self):
+    async def get_files_db_size(self):
         return (await files_db.command("dbstats"))['dataSize']
    
     async def get_second_files_db_size(self):
