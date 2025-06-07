@@ -10,9 +10,9 @@ from marshmallow.exceptions import ValidationError
 from info import FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
 
 logger = logging.getLogger(__name__)
-
+MAX_POOL = 10
 # Primary database
-client = AsyncIOMotorClient(FILES_DATABASE_URL)
+client = AsyncIOMotorClient(FILES_DATABASE_URL, maxPoolSize=MAX_POOL)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
@@ -35,7 +35,7 @@ second_instance = None
 SecondMedia = None
 
 if SECOND_FILES_DATABASE_URL:
-    second_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
+    second_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL, maxPoolSize=MAX_POOL)
     second_db = second_client[DATABASE_NAME]
     second_instance = Instance.from_db(second_db)
 
