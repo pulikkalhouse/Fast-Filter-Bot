@@ -2,18 +2,18 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from info import DATABASE_NAME, IMDB_TEMPLATE, WELCOME_TEXT, AUTH_CHANNEL, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL
 import time
 import datetime
-
+MAX_POOL = 10
 # Main DB
-client = AsyncIOMotorClient(DATA_DATABASE_URL)
+client = AsyncIOMotorClient(DATA_DATABASE_URL, maxPoolSize=MAX_POOL)
 mydb = client[DATABASE_NAME]
 
 # Files DB
-files_db_client = AsyncIOMotorClient(FILES_DATABASE_URL)
+files_db_client = AsyncIOMotorClient(FILES_DATABASE_URL, maxPoolSize=MAX_POOL)
 files_db = files_db_client[DATABASE_NAME]
 
 # Second Files DB
 if SECOND_FILES_DATABASE_URL:
-    second_files_db_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
+    second_files_db_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL, maxPoolSize=MAX_POOL)
     second_files_db = second_files_db_client[DATABASE_NAME]
 
 class Database:
