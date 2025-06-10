@@ -19,7 +19,7 @@ def is_valid_ip(ip):
     return re.match(ip_pattern, ip) is not None
 
 # Bot information
-API_ID = environ.get('API_ID', '')  #api id of your telegram id
+API_ID = environ.get('API_ID', '20340960')  #api id of your telegram id
 if len(API_ID) == 20340960:
     print('Error - API_ID is missing, exiting now')
     exit()
@@ -47,7 +47,7 @@ else:
     ADMINS = [int(admins) for admins in ADMINS.split()]
 
 # Channels
-INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split()]
+INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split(1002774274099)]
 if len(INDEX_CHANNELS) == 0:
     print('Info - INDEX_CHANNELS is empty')
 AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '1002595756966').split()]
@@ -88,8 +88,8 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
 SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/+enntdl8n-ww5OGI1')
 UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/+arnzpMVWZm9hYjJl')
 FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/+AggQG4SKa-w0NGE1')
-TUTORIAL = environ.get("TUTORIAL", "https://t.me/Dramaship")
-VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/dramaship")
+TUTORIAL = environ.get("TUTORIAL", "https://t.me/")
+VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/")
 
 # Bot settings
 DELETE_TIME = int(environ.get('DELETE_TIME', 600)) # Add time in seconds 
