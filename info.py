@@ -2,7 +2,7 @@ import re, logging
 from os import environ
 from Script import script
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(CINEMA VIBES)
 
 def is_enabled(type, value):
     data = environ.get(type, str(value))
@@ -20,16 +20,16 @@ def is_valid_ip(ip):
 
 # Bot information
 API_ID = environ.get('API_ID', '')  #api id of your telegram id
-if len(API_ID) == 0:
+if len(API_ID) == 20340960:
     print('Error - API_ID is missing, exiting now')
     exit()
 else:
     API_ID = int(API_ID)
-API_HASH = environ.get('API_HASH', '') #api hash of your telegram id
+API_HASH = environ.get('API_HASH', '731d6413f609e18766e56908534d4ae2') #api hash of your telegram id
 if len(API_HASH) == 0:
     print('Error - API_HASH is missing, exiting now')
     exit()
-BOT_TOKEN = environ.get('BOT_TOKEN', '') #bot token from botfather
+BOT_TOKEN = environ.get('BOT_TOKEN', '7652676243:AAH8Ot5yjzomVuYgs9wx_k3S42MnpvLTLPM') #bot token from botfather
 if len(BOT_TOKEN) == 0:
     print('Error - BOT_TOKEN is missing, exiting now')
     exit()
@@ -39,7 +39,7 @@ PORT = int(environ.get('PORT', '8080')) #don't change anything
 PICS = (environ.get('PICS', 'https://envs.sh/ryl.jpg')).split()
 
 # Bot Admins
-ADMINS = environ.get('ADMINS', '') #apni tg id daalo
+ADMINS = environ.get('ADMINS', '597083078') #apni tg id daalo
 if len(ADMINS) == 0:
     print('Error - ADMINS is missing, exiting now')
     exit()
@@ -50,10 +50,10 @@ else:
 INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split()]
 if len(INDEX_CHANNELS) == 0:
     print('Info - INDEX_CHANNELS is empty')
-AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '').split()]
+AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '1002595756966').split()]
 if len(AUTH_CHANNEL) == 0:
     print('Info - AUTH_CHANNEL is empty')
-LOG_CHANNEL = environ.get('LOG_CHANNEL', '') #bot log channel -1005293546253
+LOG_CHANNEL = environ.get('LOG_CHANNEL', '1002837812900') #bot log channel -1005293546253
 if len(LOG_CHANNEL) == 0:
     print('Error - LOG_CHANNEL is missing, exiting now')
     exit()
@@ -62,7 +62,7 @@ else:
 IS_FSUB = is_enabled('IS_FSUB', True)
 
 # support group
-SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '') #support group id ex:  -1002936246860
+SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '1002826630110') #support group id ex:  -1002936246860
 if len(SUPPORT_GROUP) == 0:
     print('Error - SUPPORT_GROUP is missing, exiting now')
     exit()
@@ -70,7 +70,7 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "")
+DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "mongodb+srv://pulikkalhouse2713:ipXHSk6Ye6WgHg8Y@cluster0.hjeg0zj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 if len(DATA_DATABASE_URL) == 0:
     logger.error('DATA_DATABASE_URL is missing, exiting now')
     exit()
@@ -85,9 +85,9 @@ DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
 
 # Links
-SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/DramaXShip')
-UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/DramaShip')
-FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/DramaXship')
+SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/+enntdl8n-ww5OGI1')
+UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/+arnzpMVWZm9hYjJl')
+FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/+AggQG4SKa-w0NGE1')
 TUTORIAL = environ.get("TUTORIAL", "https://t.me/Dramaship")
 VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/dramaship")
 
