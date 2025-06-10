@@ -36,7 +36,7 @@ if len(BOT_TOKEN) == 0:
 PORT = int(environ.get('PORT', '8080')) #don't change anything 
 
 # Bot pics
-PICS = (environ.get('PICS', 'https://envs.sh/ryl.jpg')).split()
+PICS = (environ.get('PICS', '')).split()
 
 # Bot Admins
 ADMINS = environ.get('ADMINS', '597083078') #apni tg id daalo
@@ -70,7 +70,7 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "mongodb+srv://pulikkalhouse2713:ipXHSk6Ye6WgHg8Y@cluster0.hjeg0zj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "mongodb+srv://poovipoovi18:4j8L1DAETqTGoo8T@cluster0.xvs5aao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 if len(DATA_DATABASE_URL) == 0:
     logger.error('DATA_DATABASE_URL is missing, exiting now')
     exit()
