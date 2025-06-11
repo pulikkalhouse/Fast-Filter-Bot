@@ -29,7 +29,7 @@ API_HASH = environ.get('API_HASH', '731d6413f609e18766e56908534d4ae2') #api hash
 if len(API_HASH) == 0:
     print('Error - API_HASH is missing, exiting now')
     exit()
-BOT_TOKEN = environ.get('BOT_TOKEN', '7652676243:AAH8Ot5yjzomVuYgs9wx_k3S42MnpvLTLPM') #bot token from botfather
+BOT_TOKEN = environ.get('BOT_TOKEN', '7652676243:AAE6iFzQV67gY4zMmvFdf5hpBxQeSbjUsnk') #bot token from botfather
 if len(BOT_TOKEN) == 0:
     print('Error - BOT_TOKEN is missing, exiting now')
     exit()
@@ -47,13 +47,13 @@ else:
     ADMINS = [int(admins) for admins in ADMINS.split()]
 
 # Channels
-INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split(1002774274099)]
+INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '1002855139376').split()]
 if len(INDEX_CHANNELS) == 0:
     print('Info - INDEX_CHANNELS is empty')
-AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '1002595756966').split()]
+AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '1002554393480').split()]
 if len(AUTH_CHANNEL) == 0:
     print('Info - AUTH_CHANNEL is empty')
-LOG_CHANNEL = environ.get('LOG_CHANNEL', '1002837812900') #bot log channel -1005293546253
+LOG_CHANNEL = environ.get('LOG_CHANNEL', '1002838937528') #bot log channel -1005293546253
 if len(LOG_CHANNEL) == 0:
     print('Error - LOG_CHANNEL is missing, exiting now')
     exit()
@@ -62,7 +62,7 @@ else:
 IS_FSUB = is_enabled('IS_FSUB', True)
 
 # support group
-SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '1002826630110') #support group id ex:  -1002936246860
+SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '4846075610') #support group id ex:  -1002936246860
 if len(SUPPORT_GROUP) == 0:
     print('Error - SUPPORT_GROUP is missing, exiting now')
     exit()
@@ -70,7 +70,7 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "mongodb+srv://poovipoovi18:4j8L1DAETqTGoo8T@cluster0.xvs5aao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "mongodb+srv://laiiqlaiiiq:97v73uNTPuVyfoS0@cluster0.naie0kh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 if len(DATA_DATABASE_URL) == 0:
     logger.error('DATA_DATABASE_URL is missing, exiting now')
     exit()
@@ -85,9 +85,9 @@ DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
 
 # Links
-SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/+enntdl8n-ww5OGI1')
-UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/+arnzpMVWZm9hYjJl')
-FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/+AggQG4SKa-w0NGE1')
+SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/+ehxbs7XYGNQzN2E1')
+UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/+21TCwY9zPvplYzM1')
+FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/+xPTL71nOwhE1YjZl')
 TUTORIAL = environ.get("TUTORIAL", "https://t.me/")
 VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/")
 
